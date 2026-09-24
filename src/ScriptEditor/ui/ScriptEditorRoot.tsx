@@ -32,7 +32,7 @@ import { NoOpenScripts } from "./NoOpenScripts";
 import { ScriptEditorContextProvider, useScriptEditorContext } from "./ScriptEditorContext";
 import { useVimEditor } from "./useVimEditor";
 import { useCallback } from "react";
-import { type AST, getFileType, getModuleScript, parseAST } from "../../utils/ScriptTransformer";
+import { FileType, getFileType, getModuleScript, parseAST, type AST } from "../../utils/ScriptTransformer";
 import { RamCalculationErrorCode } from "../../Script/RamCalculationErrorCodes";
 import { hasScriptExtension, isLegacyScript, type ScriptFilePath } from "../../Paths/ScriptFilePath";
 import type { BaseServer } from "../../Server/BaseServer";
@@ -325,7 +325,15 @@ function Root(props: IProps): React.ReactElement {
       return;
     }
     let ast;
+    const isZig = getFileType(currentScript.path) === FileType.ZIG;
     try {
+      if (isZig) {
+        // Zig scripts have no JS AST: skip parsing/import/infinite-loop analysis and
+        // hand the source to the Zig RAM estimator directly.
+        updateRAM(newCode, currentScript.path, server);
+        finishUpdatingRAM();
+        return;
+      }
       ast = parseAST(currentScript.path, currentScript.hostname, newCode, getFileType(currentScript.path));
       makeModelsForImports(ast, server);
     } catch (error) {

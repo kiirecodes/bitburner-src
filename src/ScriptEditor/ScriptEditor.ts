@@ -6,6 +6,7 @@ import * as enums from "../Enums";
 import { ns } from "../NetscriptFunctions";
 import { isLegacyScript } from "../Paths/ScriptFilePath";
 import { exceptionAlert } from "../utils/helpers/exceptionAlert";
+import { registerZigLanguage } from "../Zig/monacoZigLanguage";
 
 export class ScriptEditor {
   // Currently, this object is only used for initialization.
@@ -13,6 +14,8 @@ export class ScriptEditor {
   initialize() {
     if (this.isInitialized) return;
     this.isInitialized = true;
+    // Zig is a custom (non-bundled) Monaco language: register its tokenizer once.
+    registerZigLanguage();
     // populate API keys for adding tokenization
     const apiKeys: string[] = [];
     const api = { args: [], pid: 1, enums, ...ns };

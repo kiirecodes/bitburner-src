@@ -17,6 +17,7 @@ export enum FileType {
   TSX,
   NS1,
   CSS,
+  ZIG,
 }
 
 export interface FileTypeFeature {
@@ -47,6 +48,8 @@ export function getFileType(filename: string): FileType {
       return FileType.NS1;
     case "css":
       return FileType.CSS;
+    case "zig":
+      return FileType.ZIG;
     default:
       throw new Error(`Invalid extension: ${extension}. Filename: ${filename}.`);
   }
@@ -67,6 +70,9 @@ export function getFileTypeFeature(fileType: FileType): FileTypeFeature {
 }
 
 export function parseAST(scriptName: string, hostname: string, code: string, fileType: FileType): AST {
+  if (fileType === FileType.ZIG) {
+    throw new Error(`Cannot parse Zig script ${scriptName} as JavaScript.`);
+  }
   const fileTypeFeature = getFileTypeFeature(fileType);
   let ast: AST;
   try {

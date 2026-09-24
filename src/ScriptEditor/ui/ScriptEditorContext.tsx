@@ -6,8 +6,8 @@ import { BaseServer } from "../../Server/BaseServer";
 import { Settings } from "../../Settings/Settings";
 import { useBoolean } from "../../ui/React/hooks";
 import { formatRam } from "../../ui/formatNumber";
-
-import type { AST } from "../../utils/ScriptTransformer";
+import { estimateZigRamUsage } from "../../Zig/ZigRamEstimation";
+import { FileType, getFileType, type AST } from "../../utils/ScriptTransformer";
 import type { Options } from "./Options";
 import { type ScriptFilePath } from "../../Paths/ScriptFilePath";
 
@@ -15,7 +15,8 @@ export interface ScriptEditorContextShape {
   ram: string;
   ramEntries: string[][];
   showRAMError: (error?: RamCalculationFailure) => void;
-  updateRAM: (ast: AST, path: ScriptFilePath, server: BaseServer) => void;
+  /** `AST` for JS/TS scripts, `string` (the source) for Zig scripts. */
+  updateRAM: (input: AST | string, path: ScriptFilePath, server: BaseServer) => void;
 
   isUpdatingRAM: boolean;
   startUpdatingRAM: () => void;
@@ -56,8 +57,11 @@ export function ScriptEditorContextProvider({ children }: { children: React.Reac
     setRamEntries([[errorType, error.errorMessage ?? ""]]);
   };
 
-  const updateRAM: ScriptEditorContextShape["updateRAM"] = (ast, path, server) => {
-    const ramUsage = calculateRamUsage(ast, path, server.hostname, server.scripts);
+  const updateRAM: ScriptEditorContextShape["updateRAM"] = (input, path, server) => {
+    const ramUsage =
+      getFileType(path) === FileType.ZIG
+        ? estimateZigRamUsage(typeof input === "string" ? input : "")
+        : calculateRamUsage(input, path, server.hostname, server.scripts);
     if (ramUsage.cost && ramUsage.cost > 0) {
       const entries = ramUsage.entries?.sort((a, b) => b.cost - a.cost) ?? [];
       const entriesDisp = [];

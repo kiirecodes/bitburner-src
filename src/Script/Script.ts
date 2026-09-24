@@ -6,6 +6,8 @@ import { roundToTwo } from "../utils/helpers/roundToTwo";
 import { RamCostConstants } from "../Netscript/RamCostGenerator";
 import type { ScriptFilePath } from "../Paths/ScriptFilePath";
 import { ContentFile } from "../Paths/ContentFile";
+import { FileType, getFileType } from "../utils/ScriptTransformer";
+import { estimateZigRamUsage } from "../Zig/ZigRamEstimation";
 
 /** A script file as a file on a server.
  * For the execution of a script, see RunningScript and WorkerScript */
@@ -76,6 +78,19 @@ export class Script extends ContentFile {
    * @param {Script[]} otherScripts - Other scripts on the server. Used to process imports
    */
   updateRamUsage(otherScripts: Map<ScriptFilePath, Script>): void {
+    // Zig scripts cannot be AST-parsed like JS/TS; use the static source-scan estimator.
+    if (getFileType(this.filename) === FileType.ZIG) {
+      const ramCalc = estimateZigRamUsage(this.code);
+      if (ramCalc.cost && ramCalc.cost >= RamCostConstants.Base) {
+        this.ramUsage = roundToTwo(ramCalc.cost);
+        this.ramUsageEntries = ramCalc.entries;
+        this.ramCalculationError = null;
+      } else {
+        this.ramUsage = null;
+        this.ramCalculationError = null;
+      }
+      return;
+    }
     const ramCalc = calculateRamUsage(this.code, this.filename, this.server, otherScripts);
     if (ramCalc.cost && ramCalc.cost >= RamCostConstants.Base) {
       this.ramUsage = roundToTwo(ramCalc.cost);

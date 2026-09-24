@@ -34,6 +34,8 @@ import { UIEventEmitter, UIEventType } from "./ui/UIEventEmitter";
 import { getErrorMessageWithStackAndCause } from "./utils/ErrorHelper";
 import { exceptionAlert } from "./utils/helpers/exceptionAlert";
 import { DarknetServer } from "./Server/DarknetServer";
+import { getFileType, FileType } from "./utils/ScriptTransformer";
+import { runZigScript } from "./Zig/ZigRuntime";
 
 export const NetscriptPorts = new Map<PortNumber, Port>();
 
@@ -51,6 +53,13 @@ async function startNetscript2Script(workerScript: WorkerScript): Promise<void> 
   if (!script) throw "workerScript had no associated script. This is a bug.";
   const ns = workerScript.vars;
   if (!ns) throw `${script.filename} cannot be run because the NS object hasn't been constructed properly.`;
+
+  // Zig scripts are compiled to wasm and run through the Zig bridge instead of
+  // the JS evaluation pipeline.
+  if (getFileType(script.filename) === FileType.ZIG) {
+    await runZigScript(workerScript);
+    return;
+  }
 
   const loadedModule = await compile(script, scripts);
 

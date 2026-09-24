@@ -17,7 +17,7 @@ export const legacyScriptExtension = ".script";
  * migrating from NS1 to NS2, we still let them perform other actions on their unsupported scripts (e.g., open, copy,
  * move, delete).
  */
-export const validScriptExtensions = [".js", ".jsx", ".ts", ".tsx", legacyScriptExtension] as const;
+export const validScriptExtensions = [".js", ".jsx", ".ts", ".tsx", ".zig", legacyScriptExtension] as const;
 export type ScriptExtension = (typeof validScriptExtensions)[number];
 
 /** Sanitize a player input, resolve any relative paths, and for imports add the correct extension if missing

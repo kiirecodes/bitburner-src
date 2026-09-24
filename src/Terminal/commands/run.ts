@@ -114,5 +114,5 @@ export function run(args: (string | number | boolean)[], server: BaseServer): un
       Terminal.print(result.message);
     });
   }
-  Terminal.error(`Invalid file extension. Only .js, .jsx, .ts, .tsx, .cct, .cache, and .exe files can be run.`);
+  Terminal.error(`Invalid file extension. Only .js, .jsx, .ts, .tsx, .zig, .cct, .cache, and .exe files can be run.`);
 }

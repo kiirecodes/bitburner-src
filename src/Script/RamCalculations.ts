@@ -18,12 +18,14 @@ import { roundToTwo } from "../utils/helpers/roundToTwo";
 import {
   type AST,
   type FileTypeFeature,
+  FileType,
   getFileType,
   getFileTypeFeature,
   getModuleScript,
   parseAST,
   ModuleResolutionError,
 } from "../utils/ScriptTransformer";
+import { estimateZigRamUsage } from "../Zig/ZigRamEstimation";
 
 export interface RamUsageEntry {
   type: "ns" | "dom" | "fn" | "misc";
@@ -548,6 +550,13 @@ export function calculateRamUsage(
 ): RamCalculation {
   try {
     const fileType = getFileType(scriptName);
+    // Zig scripts can't be AST-parsed; delegate to the source-scan estimator.
+    if (fileType === FileType.ZIG) {
+      if (typeof input !== "string") {
+        throw new Error(`Zig scripts must be analyzed from source, not an AST.`);
+      }
+      return estimateZigRamUsage(input);
+    }
     const ast = typeof input === "string" ? parseAST(scriptName, server, input, fileType) : input;
     return parseOnlyRamCalculate(ast, scriptName, server, getFileTypeFeature(fileType), otherScripts);
   } catch (error) {

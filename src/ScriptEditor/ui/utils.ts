@@ -69,6 +69,9 @@ export function makeModel(hostname: string, filename: string, code: string): edi
     case FileType.CSS:
       language = "css";
       break;
+    case FileType.ZIG:
+      language = "zig";
+      break;
     default:
       throwIfReachable(fileType);
   }
