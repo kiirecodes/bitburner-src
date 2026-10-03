@@ -66,6 +66,7 @@ import file63 from "./doc/en/programming/learn.md?raw";
 import file64 from "./doc/en/programming/offlineandbonustime.md?raw";
 import file65 from "./doc/en/programming/remote_api.md?raw";
 import file66 from "./doc/en/programming/typescript_react.md?raw";
+import file67 from "./doc/en/programming/zig_scripts.md?raw";
 
 import nsDoc_bitburner__valueof_md from "../../markdown/bitburner._valueof.md?raw";
 import nsDoc_bitburner_activefragment_chargedeffect_md from "../../markdown/bitburner.activefragment.chargedeffect.md?raw";
@@ -1697,6 +1698,7 @@ AllPages["en/programming/learn.md"] = file63;
 AllPages["en/programming/offlineandbonustime.md"] = file64;
 AllPages["en/programming/remote_api.md"] = file65;
 AllPages["en/programming/typescript_react.md"] = file66;
+AllPages["en/programming/zig_scripts.md"] = file67;
 
 AllPages["nsDoc/bitburner._valueof.md"] = nsDoc_bitburner__valueof_md;
 AllPages["nsDoc/bitburner.activefragment.chargedeffect.md"] = nsDoc_bitburner_activefragment_chargedeffect_md;

@@ -10,6 +10,7 @@
 - [Terminal](basic/terminal.md)
 - [Hacking](basic/hacking.md)
 - [Scripts](basic/scripts.md)
+- [Zig scripts](programming/zig_scripts.md)
 - [Servers](basic/servers.md)
 - [RAM](basic/ram.md)
 - [Hacknet nodes](basic/hacknet_nodes.md)
