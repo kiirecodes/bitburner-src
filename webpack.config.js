@@ -93,6 +93,9 @@ module.exports = (env, argv) => {
       new MonacoWebpackPlugin({ languages: ["javascript", "typescript", "json", "css"] }),
       new webpack.DefinePlugin({
         "process.env.NODE_ENV": isDevelopment ? '"development"' : '"production"',
+        // In-browser Zig compiler URL (wasm32-wasi `zig` binary). Lets a build
+        // host a compiler without editing source. Unset == compiler not configured.
+        "process.env.ZIG_COMPILER_URL": JSON.stringify(process.env.ZIG_COMPILER_URL ?? ""),
       }),
       new HtmlWebpackPlugin(htmlConfig),
       new ForkTsCheckerWebpackPlugin({

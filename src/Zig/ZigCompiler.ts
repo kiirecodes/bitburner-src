@@ -31,8 +31,13 @@ export interface ZigCompileOptions {
 
 const DEFAULT_OPTIONS: ZigCompileOptions = { mode: "ReleaseSmall" };
 
-/** URL of the wasm-compiled Zig compiler used by the browser build. */
-export const ZIG_COMPILER_URL = "";
+/**
+ * URL of the wasm-compiled Zig compiler used by the browser build.
+ * Configured at build time via the `ZIG_COMPILER_URL` environment variable
+ * (see webpack.config.js); empty when unset. The URL should point at a
+ * self-contained wasm32-wasi `zig` binary (see tools/download-zig-compiler.mjs).
+ */
+export const ZIG_COMPILER_URL: string = process.env.ZIG_COMPILER_URL ?? "";
 
 /**
  * A Zig compiler producing wasm bytes from source. Returns the compiled module's
@@ -135,8 +140,10 @@ export class BrowserZigCompiler implements ZigCompiler {
   private async load(): Promise<{ wasi: WasiPreview1; exports: WebAssembly.Exports }> {
     if (!ZIG_COMPILER_URL) {
       throw new Error(
-        "Zig support is not fully configured: set ZIG_COMPILER_URL in src/Zig/ZigCompiler.ts to a " +
-          "WebAssembly build of the Zig compiler (a self-contained wasm32-wasi `zig` binary).",
+        "Zig support is not fully configured: this game build has no in-browser Zig compiler. " +
+          "Build with the ZIG_COMPILER_URL environment variable set to a WebAssembly build of the Zig " +
+          "compiler (a self-contained wasm32-wasi `zig` binary — see tools/download-zig-compiler.mjs), " +
+          "or run with a native `zig` binary (ZIG env var) available to the game process.",
       );
     }
     let response: Response;
